@@ -5,7 +5,7 @@ def create_app():
 
     print(f"Backend is running! Name {__name__}")
 
-    @app.route('/')
+    @app.route('/hello')
     def hello():
         return {"status": "All good I'm alive"}
 
