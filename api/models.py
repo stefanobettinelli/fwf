@@ -3,7 +3,7 @@ import os
 from sqlalchemy import Column, String, Integer
 from flask_sqlalchemy import SQLAlchemy
 
-database_path = os.environ["DATABASE_URL"]
+database_path = os.environ.get("DATABASE_URL", "no DB in env")
 db = SQLAlchemy()
 
 
@@ -38,6 +38,21 @@ class Country(db.Model):
 
     def insert(self):
         db.session.add()
+        db.session.commit()
+
+    @staticmethod
+    def insert_all(countries):
+        db.session.add_all(
+            [
+                Country(
+                    name=country["name"],
+                    capital=country["capital"],
+                    region=country["region"],
+                    flag=country["flag"],
+                )
+                for country in countries
+            ]
+        )
         db.session.commit()
 
     def delete(self):
