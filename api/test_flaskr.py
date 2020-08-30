@@ -1,13 +1,19 @@
 import unittest
 import json
+import os
+
 from flaskr import create_app
 from utils import get_simplified_countries
+from dotenv import load_dotenv
+
+load_dotenv(".flaskenv")
 
 
 class FunWithFlagsTestCase(unittest.TestCase):
     def setUp(self):
-        print("setting up tests")
         self.app = create_app()
+        self.client = self.app.test_client
+        self.database_path = os.environ["DATABASE_URL"]
 
     def tearDown(self):
         print("tear down tests")
@@ -24,7 +30,21 @@ class FunWithFlagsTestCase(unittest.TestCase):
                 self.assertTrue(simplified_country["flag"])
 
     def test_countries(self):
-        self.assertEqual(200, 300)
+        response = self.client().get("countries")
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertTrue(data["countries"])
+
+    def test_get_questions(self):
+        response = self.client().get("game")
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertTrue(data["questions"])
+        self.assertEqual(10, len(data["questions"]))
+        for question in data["questions"]:
+            self.assertEqual(3, len(question))
 
 
 # Make the tests conveniently executable

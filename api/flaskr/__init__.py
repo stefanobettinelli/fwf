@@ -1,7 +1,7 @@
-from flask import Flask, jsonify
+from flask import Flask
 from flask_migrate import Migrate
 from models import db, setup_db, Country
-from utils import get_simplified_countries
+from utils import get_simplified_countries, get_questions
 from constants import REST_COUNTRIES_ALL
 import requests
 
@@ -37,6 +37,14 @@ def create_app():
 
     @app.route("/countries")
     def get_countries():
-        return jsonify({"success": True, "countries": cached_countries,})
+        return {"success": True, "countries": cached_countries}
+
+    @app.route("/game")
+    def start_game():
+        questions = get_questions(cached_countries)
+        if not questions:
+            return {"success": False}
+
+        return {"success": True, "questions": questions}
 
     return app
