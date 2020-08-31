@@ -30,22 +30,36 @@ class FunWithFlagsTestCase(unittest.TestCase):
                 self.assertTrue(simplified_country["flag"])
 
     def test_countries(self):
-        response = self.client().get("countries")
+        response = self.client().get("/countries")
         data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data["success"], True)
         self.assertTrue(data["countries"])
 
+    def test_get_country_by_id(self):
+        response_countries = self.client().get("/countries")
+        first_country_id = json.loads(response_countries.data)["countries"][0]["id"]
+        response_country = self.client().get(f"/country/{first_country_id}")
+        data = json.loads(response_country.data)
+        self.assertEqual(response_country.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertTrue(data["country"])
+
     def test_get_questions_util(self):
-        response = self.client().get("countries")
+        response = self.client().get("/countries")
         data = json.loads(response.data)
         questions = get_questions(data["countries"])
         for question in questions:
             self.assertEqual(3, len(question["options"]))
-            self.assertTrue(0 <= question["correctAnswer"] <= 2)
+            correct_answer_id = question["correctAnswer"]
+            response_correct_answer = self.client().get(f"/country/{correct_answer_id}")
+            country_data = json.loads(response_correct_answer.data)
+            self.assertEqual(response_correct_answer.status_code, 200)
+            self.assertEqual(country_data["success"], True)
+            self.assertTrue(country_data["country"])
 
-    def test_get_questions(self):
-        response = self.client().get("game")
+    def test_create_game(self):
+        response = self.client().post("game")
         data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data["success"], True)

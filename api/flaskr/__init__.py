@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, abort
 from flask_migrate import Migrate
 from models import db, setup_db, Country, Game, Question
 from utils import get_simplified_countries, get_questions
@@ -39,6 +39,15 @@ def create_app():
     def get_countries():
         return {"success": True, "countries": cached_countries}
 
+    @app.route("/country/<int:country_id>")
+    def get_country(country_id):
+        country = Country.query.get(country_id)
+
+        if country is None:
+            abort(404)
+
+        return {"success": True, "country": country.format()}
+
     @app.route("/game", methods=["POST"])
     def start_game():
         questions = get_questions(cached_countries)
@@ -64,5 +73,12 @@ def create_app():
                 for question in questions
             ],
         }
+
+    @app.errorhandler(404)
+    def resource_not_found(error):
+        return (
+            {"success": False, "error": 404, "message": "resource not found"},
+            404,
+        )
 
     return app
