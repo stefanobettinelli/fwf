@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_migrate import Migrate
-from models import db, setup_db, Country
+from models import db, setup_db, Country, Game, Question
 from utils import get_simplified_countries, get_questions
 from constants import REST_COUNTRIES_ALL
 import requests
@@ -39,12 +39,30 @@ def create_app():
     def get_countries():
         return {"success": True, "countries": cached_countries}
 
-    @app.route("/game")
+    @app.route("/game", methods=["POST"])
     def start_game():
         questions = get_questions(cached_countries)
         if not questions:
             return {"success": False}
 
-        return {"success": True, "questions": questions}
+        # TODO: consider persisting the game only if the user is logged in
+        game = Game()
+        game.insert()
+
+        for q in questions:
+            question = Question(
+                options=q["options"], correct_answer=q["correctAnswer"], game_id=game.id
+            )
+            question.insert()
+            q["id"] = question.id
+
+        return {
+            "success": True,
+            "id": game.id,
+            "questions": [
+                {"id": question["id"], "options": question["options"]}
+                for question in questions
+            ],
+        }
 
     return app

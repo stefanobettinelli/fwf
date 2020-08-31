@@ -3,7 +3,7 @@ import json
 import os
 
 from flaskr import create_app
-from utils import get_simplified_countries
+from utils import get_simplified_countries, get_questions
 from dotenv import load_dotenv
 
 load_dotenv(".flaskenv")
@@ -36,6 +36,14 @@ class FunWithFlagsTestCase(unittest.TestCase):
         self.assertEqual(data["success"], True)
         self.assertTrue(data["countries"])
 
+    def test_get_questions_util(self):
+        response = self.client().get("countries")
+        data = json.loads(response.data)
+        questions = get_questions(data["countries"])
+        for question in questions:
+            self.assertEqual(3, len(question["options"]))
+            self.assertTrue(0 <= question["correctAnswer"] <= 2)
+
     def test_get_questions(self):
         response = self.client().get("game")
         data = json.loads(response.data)
@@ -44,7 +52,7 @@ class FunWithFlagsTestCase(unittest.TestCase):
         self.assertTrue(data["questions"])
         self.assertEqual(10, len(data["questions"]))
         for question in data["questions"]:
-            self.assertEqual(3, len(question))
+            self.assertEqual(3, len(question["options"]))
 
 
 # Make the tests conveniently executable
