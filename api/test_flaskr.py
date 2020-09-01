@@ -3,7 +3,7 @@ import json
 import os
 
 from flaskr import create_app
-from utils import get_simplified_countries, get_questions
+from utils import get_simplified_countries, get_quiz_questions
 from dotenv import load_dotenv
 
 load_dotenv(".flaskenv")
@@ -48,7 +48,7 @@ class FunWithFlagsTestCase(unittest.TestCase):
     def test_get_questions_util(self):
         response = self.client().get("/countries")
         data = json.loads(response.data)
-        questions = get_questions(data["countries"])
+        questions = get_quiz_questions(data["countries"])
         for question in questions:
             self.assertEqual(3, len(question["options"]))
             correct_answer_id = question["correctAnswer"]
@@ -59,7 +59,7 @@ class FunWithFlagsTestCase(unittest.TestCase):
             self.assertTrue(country_data["country"])
 
     def test_create_game(self):
-        response = self.client().post("game")
+        response = self.client().post("/game")
         data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data["success"], True)
@@ -67,6 +67,13 @@ class FunWithFlagsTestCase(unittest.TestCase):
         self.assertEqual(10, len(data["questions"]))
         for question in data["questions"]:
             self.assertEqual(3, len(question["options"]))
+
+    def test_get_question(self):
+        response = self.client().get("/questions")
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["success"], True)
+        # first_question_id = data[0]["id"]
 
 
 # Make the tests conveniently executable

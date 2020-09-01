@@ -14,7 +14,7 @@ def get_simplified_countries(json_countries):
     ]
 
 
-def get_questions(countries, quiz_questions=10):
+def get_quiz_questions(countries, quiz_questions=10):
     selected_countries = sample(countries, quiz_questions * QUIZ_CHOICES)
     questions = []
 

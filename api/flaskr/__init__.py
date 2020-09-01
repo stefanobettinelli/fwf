@@ -1,7 +1,7 @@
 from flask import Flask, abort
 from flask_migrate import Migrate
 from models import db, setup_db, Country, Game, Question
-from utils import get_simplified_countries, get_questions
+from utils import get_simplified_countries, get_quiz_questions
 from constants import REST_COUNTRIES_ALL
 import requests
 
@@ -50,7 +50,7 @@ def create_app():
 
     @app.route("/game", methods=["POST"])
     def start_game():
-        questions = get_questions(cached_countries)
+        questions = get_quiz_questions(cached_countries)
         if not questions:
             return {"success": False}
 
@@ -73,6 +73,15 @@ def create_app():
                 for question in questions
             ],
         }
+
+    @app.route("/questions")
+    def get_questions():
+        questions = Question.query.all()
+
+        if questions is None:
+            abort(404)
+
+        return {"success": True, "questions": [q.format() for q in questions]}
 
     @app.errorhandler(404)
     def resource_not_found(error):
