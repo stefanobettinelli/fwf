@@ -1,9 +1,10 @@
+import base64
+import requests
 from flask import Flask, abort
 from flask_migrate import Migrate
 from models import db, setup_db, Country, Game, Question
 from utils import get_simplified_countries, get_quiz_questions
 from constants import REST_COUNTRIES_ALL
-import requests
 
 migrate = Migrate()
 
@@ -39,7 +40,7 @@ def create_app():
     def get_countries():
         return {"success": True, "countries": cached_countries}
 
-    @app.route("/country/<int:country_id>")
+    @app.route("/countries/<int:country_id>")
     def get_country(country_id):
         country = Country.query.get(country_id)
 
@@ -50,29 +51,40 @@ def create_app():
 
     @app.route("/game", methods=["POST"])
     def start_game():
-        questions = get_quiz_questions(cached_countries)
-        if not questions:
+        generated_questions = get_quiz_questions(cached_countries)
+        if not generated_questions:
             return {"success": False}
 
         # TODO: consider persisting the game only if the user is logged in
         game = Game()
         game.insert()
 
-        for q in questions:
+        questions = []
+        for q in generated_questions:
             question = Question(
-                options=q["options"], correct_answer=q["correctAnswer"], game_id=game.id
+                options=q["options"], correct_answer=q["correctAnswer"], game=game,
             )
             question.insert()
-            q["id"] = question.id
+            questions.append(question)
 
         return {
             "success": True,
             "id": game.id,
-            "questions": [
-                {"id": question["id"], "options": question["options"]}
-                for question in questions
-            ],
+            "questions": [question.format() for question in questions],
         }
+
+    @app.route("/games")
+    def get_games():
+        games = Game.query.all()
+        data = [
+            {"id": g.id, "questions": [q.format() for q in g.questions.all()]}
+            for g in games
+        ]
+
+        if games is None:
+            abort(404)
+
+        return {"success": True, "games": data}
 
     @app.route("/questions")
     def get_questions():
@@ -82,6 +94,32 @@ def create_app():
             abort(404)
 
         return {"success": True, "questions": [q.format() for q in questions]}
+
+    @app.route("/questions/<int:question_id>")
+    def get_question(question_id):
+        question = Question.query.get(question_id)
+
+        if question is None:
+            abort(404)
+
+        return {"success": True, "question": question.format()}
+
+    @app.route("/questions/<int:question_id>/flag")
+    def get_question_flag(question_id):
+        question = Question.query.get(question_id)
+
+        if question is None:
+            abort(404)
+
+        country = Country.query.get(question.correct_answer)
+
+        if country is None:
+            abort(404)
+
+        flag_url = country.flag
+        flag_b64 = base64.b64encode(flag_url.encode("utf-8"))
+
+        return {"success": True, "flagBase64": flag_b64.decode("utf-8")}
 
     @app.errorhandler(404)
     def resource_not_found(error):

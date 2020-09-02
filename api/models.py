@@ -79,7 +79,7 @@ class Country(db.Model):
 
 class Game(db.Model):
     __tablename__ = "games"
-    questions = db.relationship("Question", lazy="dynamic")
+    questions = db.relationship("Question", backref="game", lazy="dynamic")
 
     id = Column(Integer, primary_key=True)
 
@@ -122,6 +122,7 @@ class Question(db.Model):
         return {
             "id": self.id,
             "options": self.options,
-            "correct_answer": self.correct_answer,
+            "correct_answer": self.correct_answer,  # TODO: needs to be removed later on
             "submitted_answer": self.submitted_answer,
+            "game_id": self.game.id,
         }

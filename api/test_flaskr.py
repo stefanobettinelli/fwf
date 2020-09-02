@@ -39,7 +39,7 @@ class FunWithFlagsTestCase(unittest.TestCase):
     def test_get_country_by_id(self):
         response_countries = self.client().get("/countries")
         first_country_id = json.loads(response_countries.data)["countries"][0]["id"]
-        response_country = self.client().get(f"/country/{first_country_id}")
+        response_country = self.client().get(f"/countries/{first_country_id}")
         data = json.loads(response_country.data)
         self.assertEqual(response_country.status_code, 200)
         self.assertEqual(data["success"], True)
@@ -52,7 +52,9 @@ class FunWithFlagsTestCase(unittest.TestCase):
         for question in questions:
             self.assertEqual(3, len(question["options"]))
             correct_answer_id = question["correctAnswer"]
-            response_correct_answer = self.client().get(f"/country/{correct_answer_id}")
+            response_correct_answer = self.client().get(
+                f"/countries/{correct_answer_id}"
+            )
             country_data = json.loads(response_correct_answer.data)
             self.assertEqual(response_correct_answer.status_code, 200)
             self.assertEqual(country_data["success"], True)
@@ -68,12 +70,35 @@ class FunWithFlagsTestCase(unittest.TestCase):
         for question in data["questions"]:
             self.assertEqual(3, len(question["options"]))
 
+    def test_get_games(self):
+        response = self.client().get("/games")
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["success"], True)
+        for game in data["games"]:
+            self.assertTrue(game["questions"])
+            self.assertEqual(10, len(game["questions"]))
+
     def test_get_question(self):
         response = self.client().get("/questions")
         data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data["success"], True)
-        # first_question_id = data[0]["id"]
+        first_question_id = data["questions"][0]["id"]
+        response_single_question = self.client().get(f"/questions/{first_question_id}")
+        data_single_questions = json.loads(response_single_question.data)
+        self.assertEqual(response_single_question.status_code, 200)
+        self.assertEqual(data_single_questions["success"], True)
+
+    def test_get_flag(self):
+        response = self.client().post("/game")
+        data = json.loads(response.data)
+        question = data["questions"][0]
+        response_flag = self.client().get(f"/questions/{question['id']}/flag")
+        self.assertEqual(response_flag.status_code, 200)
+        data_flag = json.loads(response_flag.data)
+        self.assertEqual(data_flag["success"], True)
+        self.assertTrue(data_flag["flagBase64"])
 
 
 # Make the tests conveniently executable
