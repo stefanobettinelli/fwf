@@ -1,6 +1,6 @@
 import os
 
-from sqlalchemy import Column, String, Integer, ARRAY
+from sqlalchemy import Column, String, Integer, ARRAY, JSON, DateTime
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 
@@ -77,32 +77,11 @@ class Country(db.Model):
         }
 
 
-class Game(db.Model):
-    __tablename__ = "games"
-    questions = db.relationship("Question", backref="game", lazy="dynamic")
-
-    id = Column(Integer, primary_key=True)
-
-    def insert(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
-
-    def update(self):
-        db.session.commit()
-
-    def format(self):
-        return {"id": self.id}
-
-
 class Question(db.Model):
     __tablename__ = "questions"
 
     id = Column(Integer, primary_key=True)
-    options = Column(ARRAY(String), nullable=False)
+    options = Column(ARRAY(JSON), nullable=False)
     correct_answer = Column(Integer, nullable=False)
     submitted_answer = Column(Integer, nullable=True)
     game_id = Column(Integer, db.ForeignKey("games.id"))
@@ -125,4 +104,33 @@ class Question(db.Model):
             "correct_answer": self.correct_answer,  # TODO: needs to be removed later on
             "submitted_answer": self.submitted_answer,
             "game_id": self.game.id,
+        }
+
+
+class Game(db.Model):
+    __tablename__ = "games"
+    questions = db.relationship("Question", backref="game", lazy="dynamic")
+
+    id = Column(Integer, primary_key=True)
+    score = Column(Integer, nullable=False, default=0)
+    start_time = db.Column(DateTime, nullable=False)
+    end_time = db.Column(DateTime, nullable=True)
+
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def update(self):
+        db.session.commit()
+
+    def format(self):
+        return {
+            "id": self.id,
+            "score": self.score,
+            "start_time": self.start_time,
+            "end_time": self.end_time,
         }

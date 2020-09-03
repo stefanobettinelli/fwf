@@ -1,5 +1,6 @@
 from random import randint, sample
 from constants import QUIZ_CHOICES
+from models import Country
 
 
 def get_simplified_countries(json_countries):
@@ -26,7 +27,14 @@ def get_quiz_questions(countries, quiz_questions=10):
         question = {
             "correctAnswer": correct_answer,
             "options": [
-                s_c["name"] for s_c in selected_countries[i : i + QUIZ_CHOICES]
+                Country(
+                    id=s_c["id"],
+                    name=s_c["name"],
+                    capital=s_c["capital"],
+                    region=s_c["region"],
+                    flag="",
+                ).format()
+                for s_c in selected_countries[i : i + QUIZ_CHOICES]
             ],
         }
         questions.append(question)

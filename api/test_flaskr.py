@@ -2,9 +2,12 @@ import unittest
 import json
 import os
 
+from constants import QUIZ_CHOICES
 from flaskr import create_app
 from utils import get_simplified_countries, get_quiz_questions
 from dotenv import load_dotenv
+from random import randint
+from datetime import datetime
 
 load_dotenv(".flaskenv")
 
@@ -60,16 +63,6 @@ class FunWithFlagsTestCase(unittest.TestCase):
             self.assertEqual(country_data["success"], True)
             self.assertTrue(country_data["country"])
 
-    def test_create_game(self):
-        response = self.client().post("/game")
-        data = json.loads(response.data)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(data["success"], True)
-        self.assertTrue(data["questions"])
-        self.assertEqual(10, len(data["questions"]))
-        for question in data["questions"]:
-            self.assertEqual(3, len(question["options"]))
-
     def test_get_games(self):
         response = self.client().get("/games")
         data = json.loads(response.data)
@@ -91,14 +84,52 @@ class FunWithFlagsTestCase(unittest.TestCase):
         self.assertEqual(data_single_questions["success"], True)
 
     def test_get_flag(self):
-        response = self.client().post("/game")
-        data = json.loads(response.data)
+        data = self.test_create_game()
         question = data["questions"][0]
         response_flag = self.client().get(f"/questions/{question['id']}/flag")
         self.assertEqual(response_flag.status_code, 200)
         data_flag = json.loads(response_flag.data)
         self.assertEqual(data_flag["success"], True)
         self.assertTrue(data_flag["flagBase64"])
+
+    def test_play_game(self):
+        game = self.test_create_game()
+        questions = game["questions"]
+        for question in questions:
+            random_answer_index = randint(0, QUIZ_CHOICES - 1)
+            question_id = question["id"]
+            response = self.client().patch(
+                f"/questions/{question_id}",
+                json={
+                    "submittedAnswer": json.loads(
+                        question["options"][random_answer_index]
+                    )["id"]
+                },
+            )
+            self.assertEqual(response.status_code, 200)
+            answered_question_data = json.loads(response.data)
+            self.assertTrue(answered_question_data["question"]["submitted_answer"])
+
+        end_time = datetime.now()
+        response_submit_game = self.client().patch(
+            f"/games/{game['id']}", json={"endTime": end_time}
+        )
+        self.assertEqual(response_submit_game.status_code, 200)
+        ended_game_data = json.loads(response_submit_game.data)
+        self.assertTrue(ended_game_data["game"]["end_time"])
+        self.assertTrue(0 <= ended_game_data["game"]["score"] <= 10)
+
+    def test_create_game(self):
+        start_time = datetime.now()
+        response = self.client().post("/games", json={"startTime": start_time})
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
+        self.assertEqual(data["success"], True)
+        self.assertTrue(data["questions"])
+        self.assertEqual(10, len(data["questions"]))
+        for question in data["questions"]:
+            self.assertEqual(3, len(question["options"]))
+        return data
 
 
 # Make the tests conveniently executable

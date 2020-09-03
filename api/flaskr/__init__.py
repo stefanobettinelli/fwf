@@ -1,6 +1,6 @@
 import base64
 import requests
-from flask import Flask, abort
+from flask import Flask, abort, request
 from flask_migrate import Migrate
 from models import db, setup_db, Country, Game, Question
 from utils import get_simplified_countries, get_quiz_questions
@@ -49,14 +49,16 @@ def create_app():
 
         return {"success": True, "country": country.format()}
 
-    @app.route("/game", methods=["POST"])
+    @app.route("/games", methods=["POST"])
     def start_game():
         generated_questions = get_quiz_questions(cached_countries)
         if not generated_questions:
             return {"success": False}
 
         # TODO: consider persisting the game only if the user is logged in
-        game = Game()
+        data = request.get_json()
+        start_time = data["startTime"]
+        game = Game(start_time=start_time)
         game.insert()
 
         questions = []
@@ -72,6 +74,24 @@ def create_app():
             "id": game.id,
             "questions": [question.format() for question in questions],
         }
+
+    @app.route("/games/<int:game_id>", methods=["PATCH"])
+    def end_game(game_id):
+        game = Game.query.get(game_id)
+
+        if game is None:
+            abort(404)
+
+        data = request.get_json()
+        game.end_time = data["endTime"]
+        score = 0
+        for q in game.questions.all():
+            if q.submitted_answer == q.correct_answer:
+                score += 1
+        game.score = score
+        game.update()
+
+        return {"success": True, "game": game.format()}
 
     @app.route("/games")
     def get_games():
@@ -120,6 +140,19 @@ def create_app():
         flag_b64 = base64.b64encode(flag_url.encode("utf-8"))
 
         return {"success": True, "flagBase64": flag_b64.decode("utf-8")}
+
+    @app.route("/questions/<int:question_id>", methods=["PATCH"])
+    def answer_to_question(question_id):
+        question = Question.query.get(question_id)
+
+        if question is None:
+            abort(404)
+
+        data = request.get_json()
+        question.submitted_answer = data["submittedAnswer"]
+        question.update()
+
+        return {"success": True, "question": question.format()}
 
     @app.errorhandler(404)
     def resource_not_found(error):
