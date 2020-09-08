@@ -111,17 +111,14 @@ class FunWithFlagsTestCase(unittest.TestCase):
             self.assertTrue(answered_question_data["question"]["submitted_answer"])
 
         end_time = datetime.now()
-        response_submit_game = self.client().patch(
-            f"/games/{game['id']}", json={"endTime": end_time}
-        )
+        response_submit_game = self.client().patch(f"/games/{game['id']}")
         self.assertEqual(response_submit_game.status_code, 200)
         ended_game_data = json.loads(response_submit_game.data)
         self.assertTrue(ended_game_data["game"]["end_time"])
         self.assertTrue(0 <= ended_game_data["game"]["score"] <= 10)
 
     def test_create_game(self):
-        start_time = datetime.now()
-        response = self.client().post("/games", json={"startTime": start_time})
+        response = self.client().post("/games")
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data["success"], True)

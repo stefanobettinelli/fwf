@@ -1,5 +1,5 @@
 import os
-
+import json
 from sqlalchemy import Column, String, Integer, ARRAY, JSON, DateTime
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
@@ -100,7 +100,7 @@ class Question(db.Model):
     def format(self):
         return {
             "id": self.id,
-            "options": self.options,
+            "options": [json.loads(o) for o in self.options],
             "correct_answer": self.correct_answer,  # TODO: needs to be removed later on
             "submitted_answer": self.submitted_answer,
             "game_id": self.game.id,
