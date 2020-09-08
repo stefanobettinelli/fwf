@@ -65,8 +65,7 @@ def create_app():
             return {"success": False}
 
         # TODO: consider persisting the game only if the user is logged in
-        data = request.get_json()
-        start_time = data["startTime"]
+        start_time = datetime.now()
         game = Game(start_time=start_time)
         game.insert()
 
@@ -91,8 +90,7 @@ def create_app():
         if game is None:
             abort(404)
 
-        data = request.get_json()
-        game.end_time = data["endTime"]
+        game.end_time = datetime.now()
         score = 0
         for q in game.questions.all():
             if q.submitted_answer == q.correct_answer:
