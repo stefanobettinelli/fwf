@@ -1,5 +1,7 @@
 import base64
 import requests
+
+from datetime import datetime
 from flask import Flask, abort, request
 from flask_migrate import Migrate
 from models import db, setup_db, Country, Game, Question
@@ -34,10 +36,17 @@ def create_app():
 
     @app.route("/hello")
     def hello():
-        return {"status": "All good I'm alive"}
+        if cached_countries is None:
+            return {
+                "success": False,
+                "status": "Countries Error",
+            }  # TODO: provide a better msg solution
+        return {"success": True, "status": "All good I'm alive"}
 
     @app.route("/countries")
     def get_countries():
+        if cached_countries is None:
+            return {"success": False}
         return {"success": True, "countries": cached_countries}
 
     @app.route("/countries/<int:country_id>")
