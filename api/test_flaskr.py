@@ -2,9 +2,9 @@ import unittest
 import json
 import os
 
-from constants import QUIZ_CHOICES
+from constants import QUESTION_CHOICES
 from flaskr import create_app
-from utils import get_simplified_countries, get_quiz_questions
+from utils import get_simplified_countries, get_game_questions
 from dotenv import load_dotenv
 from random import randint
 from datetime import datetime
@@ -51,7 +51,7 @@ class FunWithFlagsTestCase(unittest.TestCase):
     def test_get_questions_util(self):
         response = self.client().get("/countries")
         data = json.loads(response.data)
-        questions = get_quiz_questions(data["countries"])
+        questions = get_game_questions(data["countries"])
         for question in questions:
             self.assertEqual(3, len(question["options"]))
             correct_answer_id = question["correctAnswer"]
@@ -96,14 +96,12 @@ class FunWithFlagsTestCase(unittest.TestCase):
         game = self.test_create_game()
         questions = game["questions"]
         for question in questions:
-            random_answer_index = randint(0, QUIZ_CHOICES - 1)
+            random_answer_index = randint(0, QUESTION_CHOICES - 1)
             question_id = question["id"]
             response = self.client().patch(
                 f"/questions/{question_id}",
                 json={
-                    "submittedAnswer": json.loads(
-                        question["options"][random_answer_index]
-                    )["id"]
+                    "submittedAnswer": question["options"][random_answer_index]["id"]
                 },
             )
             self.assertEqual(response.status_code, 200)

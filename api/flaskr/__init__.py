@@ -5,7 +5,7 @@ from datetime import datetime
 from flask import Flask, abort, request
 from flask_migrate import Migrate
 from models import db, setup_db, Country, Game, Question
-from utils import get_simplified_countries, get_quiz_questions
+from utils import get_simplified_countries, get_game_questions
 from constants import REST_COUNTRIES_ALL
 
 migrate = Migrate()
@@ -60,7 +60,7 @@ def create_app():
 
     @app.route("/games", methods=["POST"])
     def start_game():
-        generated_questions = get_quiz_questions(cached_countries)
+        generated_questions = get_game_questions(cached_countries)
         if not generated_questions:
             return {"success": False}
 

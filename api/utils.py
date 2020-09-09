@@ -1,5 +1,5 @@
 from random import randint, sample
-from constants import QUIZ_CHOICES
+from constants import QUESTION_CHOICES
 from models import Country
 
 
@@ -15,15 +15,15 @@ def get_simplified_countries(json_countries):
     ]
 
 
-def get_quiz_questions(countries, quiz_questions=10):
-    selected_countries = sample(countries, quiz_questions * QUIZ_CHOICES)
+def get_game_questions(countries, questions_len=10):
+    selected_countries = sample(countries, questions_len * QUESTION_CHOICES)
     questions = []
 
-    for i in range(0, len(selected_countries), QUIZ_CHOICES):
-        correct_answer_index = randint(0, QUIZ_CHOICES - 1)
-        correct_answer = selected_countries[i : i + QUIZ_CHOICES][correct_answer_index][
-            "id"
-        ]
+    for i in range(0, len(selected_countries), QUESTION_CHOICES):
+        correct_answer_index = randint(0, QUESTION_CHOICES - 1)
+        correct_answer = selected_countries[i : i + QUESTION_CHOICES][
+            correct_answer_index
+        ]["id"]
         question = {
             "correctAnswer": correct_answer,
             "options": [
@@ -34,7 +34,7 @@ def get_quiz_questions(countries, quiz_questions=10):
                     region=s_c["region"],
                     flag="",
                 ).format()
-                for s_c in selected_countries[i : i + QUIZ_CHOICES]
+                for s_c in selected_countries[i : i + QUESTION_CHOICES]
             ],
         }
         questions.append(question)
