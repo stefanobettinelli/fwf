@@ -23,7 +23,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const currentPath = location.pathname;
     if (location.pathname === ROUTES.HOME) setQuickGame(null);
   }, [location]);
 
