@@ -8,36 +8,54 @@ import {
   CardMedia,
   FormControl,
   FormControlLabel,
-  FormLabel,
   Radio,
   RadioGroup,
 } from "@material-ui/core";
+import { getRequest } from "../../networkManager";
+import useStyles from "./styles";
 
 function Game({ game }) {
-  const [currentQuestion, setCurrenctQuestion] = useState(null);
+  const classes = useStyles();
+  const [currentQuestion, setCurrentQuestion] = useState(null);
   const [selectedOption, setSelectedOptions] = useState(null);
+  const [currentQuestionFlag, setCurrentQuestionFlag] = useState(null);
 
   useEffect(() => {
-    setCurrenctQuestion(game.questions[0]);
-  }, []);
+    if (!currentQuestion) setCurrentQuestion(game.questions[0]);
+  }, [currentQuestion, game]);
 
-  console.log(currentQuestion);
+  useEffect(() => {
+    const getFlagUrl = async () => {
+      if (!currentQuestion) return;
+      const data = await getRequest(`/questions/${currentQuestion.id}/flag`);
+      const flagUrl = atob(data.flagBase64);
+      setCurrentQuestionFlag(flagUrl);
+    };
+    getFlagUrl();
+  }, [currentQuestion]);
 
   return (
     <Card>
+      {currentQuestionFlag && (
+        <CardMedia
+          image={currentQuestionFlag}
+          classes={{ root: classes.root }}
+        />
+      )}
       <CardContent>
-        <CardMedia />
         <FormControl component="fieldset">
           <RadioGroup
             aria-label="gender"
-            name="gender1"
             value={selectedOption}
-            onChange={() => {}}
+            onChange={(event) => {
+              setSelectedOptions(String(event.target.value));
+            }}
           >
             {currentQuestion &&
               currentQuestion.options.map((option) => (
                 <FormControlLabel
-                  value={option.id}
+                  key={option.id}
+                  value={String(option.id)}
                   control={<Radio />}
                   label={option.name}
                 />
@@ -46,7 +64,6 @@ function Game({ game }) {
         </FormControl>
       </CardContent>
       <CardActions>
-        {game.id}
         <Button color="primary" variant="contained" disableElevation>
           Next
         </Button>
