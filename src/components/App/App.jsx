@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Container, CssBaseline } from "@material-ui/core";
+import {
+  BottomNavigation,
+  BottomNavigationAction,
+  Container,
+  CssBaseline,
+} from "@material-ui/core";
+import { HomeRounded } from "@material-ui/icons";
+
 import useStyles from "./styles";
 import { getRequest, postRequest } from "../../networkManager";
-import { Redirect, Route, Switch, useLocation } from "react-router-dom";
+import { Redirect, Route, Switch, useLocation, Link } from "react-router-dom";
 import Home from "../Home/Home";
 import Game from "../Game/Game";
 import { ROUTES } from "../../constants";
@@ -34,6 +41,15 @@ function App() {
   return (
     <>
       <CssBaseline />
+      <BottomNavigation value="Home" onChange={() => {}}>
+        <Link to="/">
+          <BottomNavigationAction
+            label="Home"
+            value="home"
+            icon={<HomeRounded />}
+          />
+        </Link>
+      </BottomNavigation>
       <Container classes={{ root: classes.root }}>
         <Switch>
           <Route exact path="/">
