@@ -1,5 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
+// TODO fix property names
 export default makeStyles({
   root: {
     height: "100%",

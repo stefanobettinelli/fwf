@@ -39,7 +39,7 @@ function Game({ game }) {
       {currentQuestionFlag && (
         <CardMedia
           image={currentQuestionFlag}
-          classes={{ root: classes.root }}
+          classes={{ root: classes.imageRoot }}
         />
       )}
       <CardContent>
@@ -63,8 +63,21 @@ function Game({ game }) {
           </RadioGroup>
         </FormControl>
       </CardContent>
-      <CardActions>
-        <Button color="primary" variant="contained" disableElevation>
+      <CardActions classes={{ root: classes.actions }}>
+        <Button
+          classes={{ root: classes.buttonRoot }}
+          color="primary"
+          variant="contained"
+          disableElevation
+        >
+          Prev
+        </Button>
+        <Button
+          classes={{ root: `${classes.buttonRoot} ${classes.buttonNext}` }}
+          color="primary"
+          variant="contained"
+          disableElevation
+        >
           Next
         </Button>
       </CardActions>
