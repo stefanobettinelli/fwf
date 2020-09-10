@@ -58,7 +58,7 @@ function Game({ game }) {
   };
 
   return (
-    <Card>
+    <Card classes={{ root: classes.cardRoot }}>
       {currentQuestionFlag && (
         <CardMedia
           image={currentQuestionFlag}
@@ -100,12 +100,27 @@ function Game({ game }) {
         {currentQuestion?.index < 9 && (
           <Button
             onClick={handleNext}
-            classes={{ root: `${classes.buttonRoot} ${classes.buttonNext}` }}
+            classes={{
+              root: `${classes.buttonRoot} ${classes.buttonNext} ${
+                currentQuestion.index === 0 && classes.buttonNextAlone
+              }`,
+            }}
             color="primary"
             variant="contained"
             disableElevation
           >
             Next
+          </Button>
+        )}
+        {currentQuestion?.index === 9 && (
+          <Button
+            onClick={() => {}}
+            classes={{ root: `${classes.buttonRoot} ${classes.buttonFinish}` }}
+            color="primary"
+            variant="contained"
+            disableElevation
+          >
+            Finish!
           </Button>
         )}
       </CardActions>
