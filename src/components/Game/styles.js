@@ -5,8 +5,7 @@ export default makeStyles({
     width: "100%",
   },
   imageRoot: {
-    width: "318px",
-    height: "180px",
+    width: "100%",
   },
   actions: {
     display: "flex",

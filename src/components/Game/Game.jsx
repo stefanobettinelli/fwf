@@ -60,10 +60,7 @@ function Game({ game }) {
   return (
     <Card classes={{ root: classes.cardRoot }}>
       {currentQuestionFlag && (
-        <CardMedia
-          image={currentQuestionFlag}
-          classes={{ root: classes.imageRoot }}
-        />
+        <img src={currentQuestionFlag} className={classes.imageRoot} />
       )}
       <CardContent>
         <FormControl component="fieldset">
