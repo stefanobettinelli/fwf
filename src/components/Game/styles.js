@@ -17,6 +17,6 @@ export default makeStyles({
     borderRadius: "200px",
   },
   buttonNext: {
-    backgroundColor: "#6FCF97",
+    backgroundColor: "#6FCF97 !important",
   },
 });

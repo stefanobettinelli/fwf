@@ -21,18 +21,41 @@ function Game({ game }) {
   const [currentQuestionFlag, setCurrentQuestionFlag] = useState(null);
 
   useEffect(() => {
-    if (!currentQuestion) setCurrentQuestion(game.questions[0]);
+    if (!currentQuestion)
+      setCurrentQuestion({ index: 0, question: game.questions[0] });
   }, [currentQuestion, game]);
 
   useEffect(() => {
     const getFlagUrl = async () => {
       if (!currentQuestion) return;
-      const data = await getRequest(`/questions/${currentQuestion.id}/flag`);
+      const data = await getRequest(
+        `/questions/${currentQuestion.question.id}/flag`
+      );
       const flagUrl = atob(data.flagBase64);
       setCurrentQuestionFlag(flagUrl);
     };
     getFlagUrl();
   }, [currentQuestion]);
+
+  const handleNext = () => {
+    if (currentQuestion.index < 9) {
+      const nextIndex = currentQuestion.index + 1;
+      setCurrentQuestion({
+        index: nextIndex,
+        question: game.questions[nextIndex],
+      });
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentQuestion.index > 0) {
+      const prevIndex = currentQuestion.index - 1;
+      setCurrentQuestion({
+        index: prevIndex,
+        question: game.questions[prevIndex],
+      });
+    }
+  };
 
   return (
     <Card>
@@ -52,7 +75,7 @@ function Game({ game }) {
             }}
           >
             {currentQuestion &&
-              currentQuestion.options.map((option) => (
+              currentQuestion.question.options.map((option) => (
                 <FormControlLabel
                   key={option.id}
                   value={String(option.id)}
@@ -64,22 +87,27 @@ function Game({ game }) {
         </FormControl>
       </CardContent>
       <CardActions classes={{ root: classes.actions }}>
-        <Button
-          classes={{ root: classes.buttonRoot }}
-          color="primary"
-          variant="contained"
-          disableElevation
-        >
-          Prev
-        </Button>
-        <Button
-          classes={{ root: `${classes.buttonRoot} ${classes.buttonNext}` }}
-          color="primary"
-          variant="contained"
-          disableElevation
-        >
-          Next
-        </Button>
+        {currentQuestion?.index > 0 && (
+          <Button
+            onClick={handlePrev}
+            classes={{ root: classes.buttonRoot }}
+            variant="contained"
+            disableElevation
+          >
+            Prev
+          </Button>
+        )}
+        {currentQuestion?.index < 9 && (
+          <Button
+            onClick={handleNext}
+            classes={{ root: `${classes.buttonRoot} ${classes.buttonNext}` }}
+            color="primary"
+            variant="contained"
+            disableElevation
+          >
+            Next
+          </Button>
+        )}
       </CardActions>
     </Card>
   );
