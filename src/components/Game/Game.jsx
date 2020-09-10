@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import {
-  Button,
   Card,
   CardActions,
   CardContent,
@@ -13,6 +12,7 @@ import {
 } from "@material-ui/core";
 import { getRequest } from "../../networkManager";
 import useStyles from "./styles";
+import QuestionActions from "../QuestionActions/QuestionActions";
 
 function Game({ game }) {
   const classes = useStyles();
@@ -87,42 +87,13 @@ function Game({ game }) {
         </FormControl>
       </CardContent>
       <CardActions classes={{ root: classes.actions }}>
-        {currentQuestion?.index > 0 && (
-          <Button
-            onClick={handlePrev}
-            classes={{ root: classes.buttonRoot }}
-            variant="contained"
-            disableElevation
-          >
-            Prev
-          </Button>
-        )}
-        {currentQuestion?.index < 9 && (
-          <Button
-            onClick={handleNext}
-            classes={{
-              root: `${classes.buttonRoot} ${classes.buttonNext} ${
-                currentQuestion.index === 0 && classes.buttonNextAlone
-              }`,
-            }}
-            color="primary"
-            variant="contained"
-            disableElevation
-          >
-            Next
-          </Button>
-        )}
-        {currentQuestion?.index === 9 && (
-          <Button
-            onClick={() => {}}
-            classes={{ root: `${classes.buttonRoot} ${classes.buttonFinish}` }}
-            color="primary"
-            variant="contained"
-            disableElevation
-          >
-            Finish!
-          </Button>
-        )}
+        <QuestionActions
+          currentQuestion={currentQuestion}
+          handlePrev={handlePrev}
+          handleNext={handleNext}
+          handleFinish={() => {}}
+          classes={classes}
+        />
       </CardActions>
     </Card>
   );
