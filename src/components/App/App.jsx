@@ -9,7 +9,7 @@ import { HomeRounded } from "@material-ui/icons";
 
 import useStyles from "./styles";
 import { getRequest, postRequest } from "../../networkManager";
-import { Redirect, Route, Switch, useLocation, Link } from "react-router-dom";
+import { Link, Redirect, Route, Switch, useLocation } from "react-router-dom";
 import Home from "../Home/Home";
 import Game from "../Game/Game";
 import { ROUTES } from "../../constants";

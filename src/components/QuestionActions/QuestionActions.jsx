@@ -58,7 +58,6 @@ function QuestionActions({
 QuestionActions.propTypes = {
   currentQuestion: PropTypes.any,
   handlePrev: PropTypes.func,
-  classes: PropTypes.func,
   handleNext: PropTypes.func,
   handleFinish: PropTypes.func,
 };
