@@ -1,8 +1,9 @@
-import os
 import json
-from sqlalchemy import Column, String, Integer, ARRAY, JSON, DateTime
-from flask_sqlalchemy import SQLAlchemy
+import os
+
 from dotenv import load_dotenv
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Column, String, Integer, ARRAY, JSON, DateTime
 
 load_dotenv(".flaskenv")
 

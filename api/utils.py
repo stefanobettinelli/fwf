@@ -1,4 +1,5 @@
 from random import randint, sample
+
 from constants import QUESTION_CHOICES
 from models import Country
 

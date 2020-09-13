@@ -4,7 +4,7 @@ const postRequest = async (resource, payload = null) => {
     body: JSON.stringify(payload),
   };
   try {
-    const fetchResponse = await fetch(resource, settings);
+    const fetchResponse = await fetch(`/api${resource}`, settings);
     return await fetchResponse.json();
   } catch (e) {
     return e;
@@ -13,7 +13,7 @@ const postRequest = async (resource, payload = null) => {
 
 const getRequest = async (resource) => {
   try {
-    const fetchResponse = await fetch(resource);
+    const fetchResponse = await fetch(`/api${resource}`);
     return await fetchResponse.json();
   } catch (e) {
     return e;
@@ -29,7 +29,7 @@ const patchRequest = async (resource, payload = null) => {
     body: JSON.stringify(payload),
   };
   try {
-    const fetchResponse = await fetch(resource, settings);
+    const fetchResponse = await fetch(`/api${resource}`, settings);
     return await fetchResponse.json();
   } catch (e) {
     return e;
@@ -44,7 +44,7 @@ const deleteRequest = async (resource) => {
     },
   };
   try {
-    const fetchResponse = await fetch(resource, settings);
+    const fetchResponse = await fetch(`/api${resource}`, settings);
     return await fetchResponse.json();
   } catch (e) {
     return e;

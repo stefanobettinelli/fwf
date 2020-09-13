@@ -1,12 +1,13 @@
 import base64
-import requests
-
 from datetime import datetime
+
+import requests
 from flask import Flask, abort, request
 from flask_migrate import Migrate
+
+from constants import REST_COUNTRIES_ALL
 from models import db, setup_db, Country, Game, Question
 from utils import get_simplified_countries, get_game_questions
-from constants import REST_COUNTRIES_ALL
 
 migrate = Migrate()
 
@@ -34,7 +35,7 @@ def create_app():
             else:
                 cached_countries = stored_countries
 
-    @app.route("/hello")
+    @app.route("/api/hello")
     def hello():
         if cached_countries is None:
             return {
@@ -43,13 +44,13 @@ def create_app():
             }  # TODO: provide a better msg solution
         return {"success": True, "status": "All good I'm alive"}
 
-    @app.route("/countries")
+    @app.route("/api/countries")
     def get_countries():
         if cached_countries is None:
             return {"success": False}
         return {"success": True, "countries": cached_countries}
 
-    @app.route("/countries/<int:country_id>")
+    @app.route("/api/countries/<int:country_id>")
     def get_country(country_id):
         country = Country.query.get(country_id)
 
@@ -58,7 +59,7 @@ def create_app():
 
         return {"success": True, "country": country.format()}
 
-    @app.route("/games/<int:game_id>")
+    @app.route("/api/games/<int:game_id>")
     def get_game(game_id):
         game = Game.query.get(game_id)
 
@@ -67,7 +68,7 @@ def create_app():
 
         return {"success": True, "game": game.format()}
 
-    @app.route("/games", methods=["POST"])
+    @app.route("/api/games", methods=["POST"])
     def start_game():
         generated_questions = get_game_questions(cached_countries)
         if not generated_questions:
@@ -92,7 +93,7 @@ def create_app():
             "questions": [question.format() for question in questions],
         }
 
-    @app.route("/games/<int:game_id>", methods=["DELETE"])
+    @app.route("/api/games/<int:game_id>", methods=["DELETE"])
     def delete_game(game_id):
         game = Game.query.get(game_id)
 
@@ -103,7 +104,7 @@ def create_app():
 
         return {"success": True}
 
-    @app.route("/games/<int:game_id>", methods=["PATCH"])
+    @app.route("/api/games/<int:game_id>", methods=["PATCH"])
     def end_game(game_id):
         game = Game.query.get(game_id)
 
@@ -120,7 +121,7 @@ def create_app():
 
         return {"success": True, "game": game.format()}
 
-    @app.route("/games")
+    @app.route("/api/games")
     def get_games():
         games = Game.query.all()
         data = [
@@ -133,7 +134,7 @@ def create_app():
 
         return {"success": True, "games": data}
 
-    @app.route("/questions")
+    @app.route("/api/questions")
     def get_questions():
         questions = Question.query.all()
 
@@ -142,7 +143,7 @@ def create_app():
 
         return {"success": True, "questions": [q.format() for q in questions]}
 
-    @app.route("/questions/<int:question_id>")
+    @app.route("/api/questions/<int:question_id>")
     def get_question(question_id):
         question = Question.query.get(question_id)
 
@@ -151,7 +152,7 @@ def create_app():
 
         return {"success": True, "question": question.format()}
 
-    @app.route("/questions/<int:question_id>/flag")
+    @app.route("/api/questions/<int:question_id>/flag")
     def get_question_flag(question_id):
         question = Question.query.get(question_id)
 
@@ -168,7 +169,7 @@ def create_app():
 
         return {"success": True, "flagBase64": flag_b64.decode("utf-8")}
 
-    @app.route("/questions/<int:question_id>", methods=["PATCH"])
+    @app.route("/api/questions/<int:question_id>", methods=["PATCH"])
     def answer_to_question(question_id):
         question = Question.query.get(question_id)
 
