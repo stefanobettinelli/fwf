@@ -36,4 +36,19 @@ const patchRequest = async (resource, payload = null) => {
   }
 };
 
-export { getRequest, postRequest, patchRequest };
+const deleteRequest = async (resource) => {
+  const settings = {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  try {
+    const fetchResponse = await fetch(resource, settings);
+    return await fetchResponse.json();
+  } catch (e) {
+    return e;
+  }
+};
+
+export { getRequest, postRequest, patchRequest, deleteRequest };

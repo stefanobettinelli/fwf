@@ -8,17 +8,26 @@ import {
 import { HomeRounded } from "@material-ui/icons";
 
 import useStyles from "./styles";
-import { getRequest, postRequest } from "../../networkManager";
-import { Link, Redirect, Route, Switch, useLocation } from "react-router-dom";
+import { deleteRequest, getRequest, postRequest } from "../../networkManager";
+import {
+  Redirect,
+  Route,
+  Switch,
+  useLocation,
+  useHistory,
+} from "react-router-dom";
 import Home from "../Home/Home";
 import Game from "../Game/Game";
 import { ROUTES } from "../../constants";
 import { getGameRoute } from "../../utils";
+import ConfirmationDialog from "../ConfirmationDialog/ConfirmationDialog";
 
 function App() {
   const classes = useStyles();
+  const history = useHistory();
   const [helloFWF, setHelloFWF] = useState(null);
   const [quickGame, setQuickGame] = useState(null);
+  const [deleteGame, setDeleteGame] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -38,17 +47,44 @@ function App() {
     setQuickGame(data);
   };
 
+  const onNavigationChange = async () => {
+    if (!quickGame) {
+      history.push("/");
+      return;
+    }
+    const gameResponse = await getRequest(`/games/${quickGame.id}`);
+    if (gameResponse.game.end_time) history.push("/");
+    else if (quickGame) setDeleteGame(true);
+  };
+
+  const confirmDeleteGame = async () => {
+    if (quickGame) {
+      deleteRequest(`/games/${quickGame.id}`);
+      history.push("/");
+      setDeleteGame(false);
+    }
+  };
+
+  const onClose = () => {
+    setDeleteGame(false);
+  };
+
   return (
     <>
       <CssBaseline />
-      <BottomNavigation value="Home" onChange={() => {}}>
-        <Link to="/">
-          <BottomNavigationAction
-            label="Home"
-            value="home"
-            icon={<HomeRounded />}
-          />
-        </Link>
+      <ConfirmationDialog
+        title="To switch to home screen you need to delete the current game"
+        open={deleteGame}
+        onConfirm={confirmDeleteGame}
+        onClose={onClose}
+      />
+      <BottomNavigation value="Home">
+        <BottomNavigationAction
+          label="Home"
+          value="home"
+          icon={<HomeRounded />}
+          onClick={onNavigationChange}
+        />
       </BottomNavigation>
       <Container classes={{ root: classes.root }}>
         <Switch>
