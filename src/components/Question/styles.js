@@ -15,16 +15,4 @@ export default makeStyles({
     alignItems: "stretch",
     alignContent: "stretch",
   },
-  buttonRoot: {
-    borderRadius: "200px",
-  },
-  buttonNext: {
-    backgroundColor: "#6FCF97 !important",
-  },
-  buttonNextAlone: {
-    marginLeft: "auto",
-  },
-  buttonFinish: {
-    backgroundColor: "#846fcf",
-  },
 });
