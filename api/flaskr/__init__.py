@@ -58,6 +58,15 @@ def create_app():
 
         return {"success": True, "country": country.format()}
 
+    @app.route("/games/<int:game_id>")
+    def get_game(game_id):
+        game = Game.query.get(game_id)
+
+        if game is None:
+            abort(404)
+
+        return {"success": True, "game": game.format()}
+
     @app.route("/games", methods=["POST"])
     def start_game():
         generated_questions = get_game_questions(cached_countries)
@@ -82,6 +91,17 @@ def create_app():
             "id": game.id,
             "questions": [question.format() for question in questions],
         }
+
+    @app.route("/games/<int:game_id>", methods=["DELETE"])
+    def delete_game(game_id):
+        game = Game.query.get(game_id)
+
+        if game is None:
+            abort(404)
+
+        game.delete()
+
+        return {"success": True}
 
     @app.route("/games/<int:game_id>", methods=["PATCH"])
     def end_game(game_id):

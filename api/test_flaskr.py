@@ -125,6 +125,24 @@ class FunWithFlagsTestCase(unittest.TestCase):
             self.assertEqual(3, len(question["options"]))
         return data
 
+    def test_delete_game(self):
+        game = self.test_create_game()
+        game_question_ids = [q["id"] for q in game["questions"]]
+        response = self.client().delete(f"/games/{game['id']}")
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
+        self.assertEqual(data["success"], True)
+        for q_id in game_question_ids:
+            response_question = self.client().get(f"/questions/{q_id}")
+            self.assertEqual(response_question.status_code, 404)
+
+    def test_get_game(self):
+        game = self.test_create_game()
+        response = self.client().get(f"/games/{game['id']}")
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
+        self.assertEqual(data["success"], True)
+
 
 # Make the tests conveniently executable
 if __name__ == "__main__":

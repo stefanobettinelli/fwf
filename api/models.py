@@ -109,7 +109,9 @@ class Question(db.Model):
 
 class Game(db.Model):
     __tablename__ = "games"
-    questions = db.relationship("Question", backref="game", lazy="dynamic")
+    questions = db.relationship(
+        "Question", backref="game", lazy="dynamic", cascade="all, delete-orphan"
+    )
 
     id = Column(Integer, primary_key=True)
     score = Column(Integer, nullable=False, default=0)
@@ -131,6 +133,10 @@ class Game(db.Model):
         return {
             "id": self.id,
             "score": self.score,
-            "start_time": self.start_time,
-            "end_time": self.end_time,
+            "start_time": self.start_time.strftime("%m/%d/%Y, %H:%M:%S")
+            if self.start_time
+            else "",
+            "end_time": self.end_time.strftime("%m/%d/%Y, %H:%M:%S")
+            if self.end_time
+            else "",
         }
