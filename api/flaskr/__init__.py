@@ -15,7 +15,7 @@ cached_countries = []
 
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder="../../build", static_url_path="/")
     setup_db(app)
     migrate.init_app(app, db)
 
@@ -34,6 +34,10 @@ def create_app():
                 cached_countries = simplified_countries
             else:
                 cached_countries = stored_countries
+
+    @app.route("/")
+    def index():
+        return app.send_static_file("index.html")
 
     @app.route("/api/hello")
     def hello():
