@@ -10,20 +10,42 @@ import {
 import Score from "../Score/Score";
 import QuestionActions from "../QuestionActions/QuestionActions";
 import PropTypes from "prop-types";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import useStyles from "./styles";
+import { getRequest, patchRequest } from "../../networkManager";
 
 function Question({
   score,
   currentQuestion,
   currentQuestionFlag,
-  value,
-  onChange,
   handleNext,
   handlePrev,
   handleFinish,
 }) {
   const classes = useStyles();
+  const [questionResource, setQuestionResource] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(null);
+
+  useEffect(() => {
+    const getQuestionResource = async () => {
+      if (!currentQuestion) return;
+      const question = await getRequest(
+        `/questions/${currentQuestion.question.id}`
+      );
+      setQuestionResource(question);
+    };
+    getQuestionResource();
+  }, [currentQuestion]);
+
+  const onOptionChange = (event) => {
+    setSelectedOption(event.target.value);
+    patchRequest(`/questions/${currentQuestion.question.id}`, {
+      submittedAnswer: event.target.value,
+    });
+    // TODO:animations should be introduced in order to see the option being selected before switching to the next card
+    // if (currentQuestion.index < 9) handleNext();
+    // else handleFinish();
+  };
 
   return (
     <Card classes={{ root: classes.cardRoot }}>
@@ -36,7 +58,13 @@ function Question({
       )}
       <CardContent>
         <FormControl component="fieldset">
-          <RadioGroup aria-label="gender" value={value} onChange={onChange}>
+          <RadioGroup
+            aria-label="gender"
+            value={String(
+              questionResource?.question.submitted_answer || selectedOption
+            )}
+            onChange={onOptionChange}
+          >
             {currentQuestion &&
               currentQuestion.question.options.map((option) => (
                 <FormControlLabel

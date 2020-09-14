@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { FormControlLabel, Radio } from "@material-ui/core";
 import { getRequest, patchRequest } from "../../networkManager";
 import Question from "../Question/Question";
 
 function Game({ game }) {
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [score, setScore] = useState(null);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [currentQuestionFlag, setCurrentQuestionFlag] = useState(null);
+  const [currentQuestionFlag, setCurrentQuestionFlag] = useState(null); // TODO: this should be moved to Question component
 
   useEffect(() => {
     if (!currentQuestion && score === null) {
@@ -54,22 +52,10 @@ function Game({ game }) {
     setCurrentQuestion(null);
   };
 
-  const onOptionChange = (event) => {
-    setSelectedOption(String(event.target.value));
-    patchRequest(`/questions/${currentQuestion.question.id}`, {
-      submittedAnswer: event.target.value,
-    });
-    // TODO:animations should be introduced in order to see the option being selected before switching to the next card
-    // if (currentQuestion.index < 9) handleNext();
-    // else handleFinish();
-  };
-
   return (
     <Question
       currentQuestionFlag={currentQuestionFlag}
       score={score}
-      value={selectedOption}
-      onChange={onOptionChange}
       currentQuestion={currentQuestion}
       handlePrev={handlePrev}
       handleNext={handleNext}
