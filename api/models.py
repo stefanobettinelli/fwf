@@ -8,6 +8,7 @@ from sqlalchemy import Column, String, Integer, ARRAY, JSON, DateTime
 load_dotenv(".flaskenv")
 
 database_path = os.environ["DATABASE_URL"]
+print(f"@@@ {database_path}")
 db = SQLAlchemy()
 
 
