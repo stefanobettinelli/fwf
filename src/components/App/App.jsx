@@ -73,7 +73,7 @@ function App() {
     <>
       <CssBaseline />
       <ConfirmationDialog
-        title="To switch to home screen you need to delete the current game"
+        title="Switching to home will delete current current game"
         open={deleteGame}
         onConfirm={confirmDeleteGame}
         onClose={onClose}
