@@ -77,6 +77,7 @@ function App() {
         open={deleteGame}
         onConfirm={confirmDeleteGame}
         onClose={onClose}
+        buttonLabel="Delete"
       />
       <BottomNavigation value="Home">
         <BottomNavigationAction
