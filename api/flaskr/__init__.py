@@ -5,6 +5,7 @@ import requests
 from flask import Flask, abort, request
 from flask_migrate import Migrate
 
+from auth import AuthError
 from constants import REST_COUNTRIES_ALL
 from models import db, setup_db, Country, Game, Question
 from utils import get_simplified_countries, get_game_questions
@@ -192,6 +193,12 @@ def create_app():
             {"success": False, "error": 404, "message": "resource not found"},
             404,
         )
+
+    @app.errorhandler(AuthError)
+    def handle_auth_error(exception):
+        response = exception.error
+        response.status_code = exception.status_code
+        return response
 
     return app
 
