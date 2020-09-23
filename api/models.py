@@ -3,9 +3,9 @@ import os
 
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, String, Integer, ARRAY, JSON, DateTime
+from sqlalchemy import Column, String, Integer, Boolean, ARRAY, JSON, DateTime
 
-load_dotenv(".flaskenv")
+load_dotenv(".env")
 
 database_path = os.environ["DATABASE_URL"]
 db = SQLAlchemy()
@@ -16,19 +16,6 @@ def setup_db(app, db_path=database_path):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False  # TODO: what is this?!
     db.app = app
     db.init_app(app)
-
-
-# TODO check if this is important
-# try:
-#     todo = Todo(description=description)
-#     db.session.add(todo)
-#     db.session.commit()
-# except:
-#     db.session.rollback()
-#     error = True
-#     print(sys.exc_info())
-# finally:
-#     db.session.close()
 
 
 class Country(db.Model):
@@ -118,6 +105,7 @@ class Game(db.Model):
     score = Column(Integer, nullable=False, default=0)
     start_time = db.Column(DateTime, nullable=False)
     end_time = db.Column(DateTime, nullable=True)
+    ranked = db.Column(Boolean, nullable=True, default=False)
 
     def insert(self):
         db.session.add(self)

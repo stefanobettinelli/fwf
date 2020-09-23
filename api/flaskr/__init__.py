@@ -3,14 +3,11 @@ from datetime import datetime
 
 import requests
 from flask import Flask, abort, request
-from flask_migrate import Migrate
 
-from auth import AuthError
+from auth import AuthError, requires_auth
 from constants import REST_COUNTRIES_ALL
 from models import db, setup_db, Country, Game, Question
 from utils import get_simplified_countries, get_game_questions
-
-migrate = Migrate()
 
 cached_countries = []
 
@@ -18,7 +15,6 @@ cached_countries = []
 def create_app():
     app = Flask(__name__, static_folder="../../build", static_url_path="/")
     setup_db(app)
-    migrate.init_app(app, db)
 
     # setup cross origin
     # CORS(app)
@@ -79,9 +75,33 @@ def create_app():
         if not generated_questions:
             return {"success": False}
 
-        # TODO: consider persisting the game only if the user is logged in
         start_time = datetime.now()
         game = Game(start_time=start_time)
+        game.insert()
+
+        questions = []
+        for q in generated_questions:
+            question = Question(
+                options=q["options"], correct_answer=q["correctAnswer"], game=game,
+            )
+            question.insert()
+            questions.append(question)
+
+        return {
+            "success": True,
+            "id": game.id,
+            "questions": [question.format() for question in questions],
+        }
+
+    @app.route("/api/games/ranked", methods=["POST"])
+    @requires_auth("post:ranked-games")
+    def start_ranked_game(jwt):
+        generated_questions = get_game_questions(cached_countries)
+        if not generated_questions:
+            return {"success": False}
+
+        start_time = datetime.now()
+        game = Game(start_time=start_time, ranked=True)
         game.insert()
 
         questions = []

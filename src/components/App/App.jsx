@@ -27,6 +27,7 @@ function App() {
   const history = useHistory();
   const [helloFWF, setHelloFWF] = useState(null);
   const [quickGame, setQuickGame] = useState(null);
+  const [rankedGame, setRankedGame] = useState(null);
   const [deleteGame, setDeleteGame] = useState(false);
   const location = useLocation();
 
@@ -39,12 +40,22 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (location.pathname === ROUTES.HOME) setQuickGame(null);
+    if (location.pathname === ROUTES.HOME) {
+      setQuickGame(null);
+      setRankedGame(null);
+    }
   }, [location]);
 
   const createQuickGame = async () => {
     const data = await postRequest(ROUTES.GAMES);
     setQuickGame(data);
+  };
+
+  const createRankedGame = async (accessToken) => {
+    const data = await postRequest(ROUTES.RANKED_GAMES, {
+      Authorization: `Bearer ${accessToken}`,
+    });
+    setRankedGame(data);
   };
 
   const onNavigationChange = async () => {
@@ -90,7 +101,11 @@ function App() {
       <Container classes={{ root: classes.root }}>
         <Switch>
           <Route exact path="/">
-            <Home helloFWF={helloFWF} onClick={createQuickGame} />
+            <Home
+              helloFWF={helloFWF}
+              onClick={createQuickGame}
+              onRankedClick={createRankedGame}
+            />
           </Route>
           {quickGame && (
             <Route
@@ -99,9 +114,29 @@ function App() {
               <Game game={quickGame} />
             </Route>
           )}
+          {rankedGame && (
+            <Route
+              path={`${ROUTES.RANKED_GAMES}/:gameId/${ROUTES.QUESTION}/:questionId`}
+            >
+              <Game game={rankedGame} />
+            </Route>
+          )}
           {quickGame && (
             <Redirect
-              to={getGameRoute(quickGame.id, quickGame.questions[0].id)}
+              to={getGameRoute(
+                ROUTES.GAMES,
+                quickGame.id,
+                quickGame.questions[0].id
+              )}
+            />
+          )}
+          {rankedGame && (
+            <Redirect
+              to={getGameRoute(
+                ROUTES.RANKED_GAMES,
+                rankedGame.id,
+                rankedGame.questions[0].id
+              )}
             />
           )}
         </Switch>

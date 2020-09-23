@@ -18,8 +18,8 @@ const Auth0ProviderWithHistory = ({ children }) => {
       clientId={clientId}
       redirectUri={window.location.origin}
       onRedirectCallback={onRedirectCallback}
-      audience={`https://${domain}/api/v2/`}
-      scope="read:current_user update:current_user_metadata"
+      audience="https://flagsarefun.herokuapp.com/api/"
+      scope="post:ranked-games"
     >
       {children}
     </Auth0Provider>

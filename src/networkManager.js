@@ -1,6 +1,10 @@
-const postRequest = async (resource, payload = null) => {
+const postRequest = async (resource, headers = null, payload = null) => {
   const settings = {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...headers,
+    },
     body: JSON.stringify(payload),
   };
   try {
@@ -20,11 +24,12 @@ const getRequest = async (resource) => {
   }
 };
 
-const patchRequest = async (resource, payload = null) => {
+const patchRequest = async (resource, payload = null, headers = null) => {
   const settings = {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
+      ...headers,
     },
     body: JSON.stringify(payload),
   };
@@ -36,11 +41,12 @@ const patchRequest = async (resource, payload = null) => {
   }
 };
 
-const deleteRequest = async (resource) => {
+const deleteRequest = async (resource, headers) => {
   const settings = {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
+      ...headers,
     },
   };
   try {

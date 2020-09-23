@@ -9,7 +9,9 @@ from constants import QUESTION_CHOICES
 from flaskr import create_app
 from utils import get_simplified_countries, get_game_questions
 
-load_dotenv(".flaskenv")
+load_dotenv(".env")
+
+RANKED_PLAYER_JWT = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InBybFdlQU9FYS1rNWFxbmdZUmRwZCJ9.eyJpc3MiOiJodHRwczovL2ZzbmQtc3RlZi5ldS5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWY2NWU2ZDI3ZTFhMTMwMDY5MTY3NDQ2IiwiYXVkIjpbImh0dHBzOi8vZmxhZ3NhcmVmdW4uaGVyb2t1YXBwLmNvbS9hcGkvIiwiaHR0cHM6Ly9mc25kLXN0ZWYuZXUuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTYwMDg1OTY5MSwiZXhwIjoxNjAwOTQ2MDkxLCJhenAiOiJMM043bTV2YXRyVjJQb3hIc05CWklJMFlaanlhMlBReSIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwgcG9zdDpyYW5rZWQtZ2FtZXMiLCJwZXJtaXNzaW9ucyI6WyJkZWxldGU6Z2FtZXMiLCJwb3N0OnJhbmtlZC1nYW1lcyJdfQ.MZ0sjRdrMua4iOTLZY4HhlGyQ1bD1GipNXLXqEqvKfo8Nw0n-r7x80mEyRiX5PfqZvkFQ9CjLgiNlkDdT7B0rILZfygkdkRBTeRv65ChroGyL1HM-voRZugZStHoFVdkSpM1I4wT4VrZajbVYIKax4YKYxU1Bj1WqiFPHaZ_oqnquud78CqzrRn2uEvI7U3ypdVYEcUYFggZ8CW_k3tBGOO2H1GY2hkmpEjxuggThpnfmsccPwcMv_GfQArXemJ5VbIPkNl9j3GOcmaSKJDI2Wxci-13vJFVAKzvaELxvAQNex7kP2YhxEEF1iG5n6jnrjO4lnCBUSDNcLxjxn8Grg"
 
 
 class FunWithFlagsTestCase(unittest.TestCase):
@@ -118,6 +120,20 @@ class FunWithFlagsTestCase(unittest.TestCase):
 
     def test_create_game(self):
         response = self.client().post("/api/games")
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
+        self.assertEqual(data["success"], True)
+        self.assertTrue(data["questions"])
+        self.assertEqual(10, len(data["questions"]))
+        for question in data["questions"]:
+            self.assertEqual(3, len(question["options"]))
+        return data
+
+    def test_create_ranked_game(self):
+        response = self.client().post(
+            "/api/games/ranked",
+            headers={"Authorization": f"Bearer {RANKED_PLAYER_JWT}"},
+        )
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data["success"], True)

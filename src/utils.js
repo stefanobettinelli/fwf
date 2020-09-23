@@ -1,5 +1,4 @@
-import { ROUTES } from "./constants";
-
-export function getGameRoute(gameId, questionId) {
-  return `${ROUTES.GAMES}/${gameId}/question/${questionId}`;
+export function getGameRoute(routeBase, gameId, questionId) {
+  console.log(`${routeBase}/${gameId}/question/${questionId}`);
+  return `${routeBase}/${gameId}/question/${questionId}`;
 }
