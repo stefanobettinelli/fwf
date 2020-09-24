@@ -7,7 +7,12 @@ import LogoutButton from "../LogoutButton/LogoutButton";
 import { useAuth0 } from "@auth0/auth0-react";
 
 function Home({ helloFWF, onClick, onRankedClick }) {
-  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const {
+    user,
+    isLoading,
+    isAuthenticated,
+    getAccessTokenSilently,
+  } = useAuth0();
   const [accessToken, setAccessToken] = useState(null);
 
   useEffect(() => {
@@ -24,6 +29,8 @@ function Home({ helloFWF, onClick, onRankedClick }) {
   if (isLoading) {
     return <div>Loading...</div>;
   }
+
+  const userId = user.sub.split("|")[1];
 
   return (
     <>
@@ -48,7 +55,7 @@ function Home({ helloFWF, onClick, onRankedClick }) {
                 disableElevation
                 variant="contained"
                 color="primary"
-                onClick={() => onRankedClick(accessToken)}
+                onClick={() => onRankedClick(accessToken, userId)}
               >
                 Play ranked
               </Button>
