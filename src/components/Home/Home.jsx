@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import LoginButton from "../LoginButton/LoginButton";
 import LogoutButton from "../LogoutButton/LogoutButton";
 import { useAuth0 } from "@auth0/auth0-react";
+import useStyles from "./styles";
 
 function Home({ helloFWF, onClick, onRankedClick }) {
   const {
@@ -14,6 +15,7 @@ function Home({ helloFWF, onClick, onRankedClick }) {
     getAccessTokenSilently,
   } = useAuth0();
   const [accessToken, setAccessToken] = useState(null);
+  const classes = useStyles();
 
   useEffect(() => {
     const getToken = async () => {
@@ -41,6 +43,7 @@ function Home({ helloFWF, onClick, onRankedClick }) {
         <>
           <Link to="/games">
             <Button
+              classes={{ root: classes.buttonRoot }}
               disableElevation
               variant="contained"
               color="primary"
@@ -52,6 +55,7 @@ function Home({ helloFWF, onClick, onRankedClick }) {
           {isAuthenticated && (
             <Link to="/games">
               <Button
+                classes={{ root: classes.buttonRoot }}
                 disableElevation
                 variant="contained"
                 color="primary"
