@@ -30,7 +30,7 @@ function Home({ helloFWF, onClick, onRankedClick }) {
     return <div>Loading...</div>;
   }
 
-  const userId = user.sub.split("|")[1];
+  const userId = user?.sub.split("|")[1];
 
   return (
     <>

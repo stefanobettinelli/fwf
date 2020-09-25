@@ -82,7 +82,9 @@ def create_app():
         questions = []
         for q in generated_questions:
             question = Question(
-                options=q["options"], correct_answer=q["correctAnswer"], game=game,
+                options=q["options"],
+                correct_answer=q["correctAnswer"],
+                game_id=game.id,
             )
             question.insert()
             questions.append(question)
@@ -100,14 +102,18 @@ def create_app():
         if not generated_questions:
             return {"success": False}
 
+        data = request.get_json()
+        user_id = data["userId"]
         start_time = datetime.now()
-        game = Game(start_time=start_time, ranked=True)
+        game = Game(start_time=start_time, ranked=True, user_id=user_id)
         game.insert()
 
         questions = []
         for q in generated_questions:
             question = Question(
-                options=q["options"], correct_answer=q["correctAnswer"], game=game,
+                options=q["options"],
+                correct_answer=q["correctAnswer"],
+                game_id=game.id,
             )
             question.insert()
             questions.append(question)
