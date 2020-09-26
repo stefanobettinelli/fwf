@@ -1,8 +1,11 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 export default makeStyles({
-  cardRoot: {
+  cardRootMobile: {
     width: "100%",
+  },
+  cardRootDesktop: {
+    width: "500px",
   },
   imageRoot: {
     width: "100%",

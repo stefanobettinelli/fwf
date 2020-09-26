@@ -13,6 +13,7 @@ import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import useStyles from "./styles";
 import { getRequest, patchRequest } from "../../networkManager";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 function Question({
   score,
@@ -25,6 +26,8 @@ function Question({
   const classes = useStyles();
   const [questionResource, setQuestionResource] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
+
+  const matches = useMediaQuery("(min-width:600px)");
 
   useEffect(() => {
     const getQuestionResource = async () => {
@@ -47,8 +50,15 @@ function Question({
     // else handleFinish();
   };
 
+  let cardRootStyle = "";
+  if (matches) {
+    cardRootStyle = classes.cardRootDesktop;
+  } else {
+    cardRootStyle = classes.cardRootMobile;
+  }
+
   return (
-    <Card classes={{ root: classes.cardRoot }}>
+    <Card classes={{ root: cardRootStyle }}>
       {currentQuestionFlag && score === null && (
         <img
           src={currentQuestionFlag}
