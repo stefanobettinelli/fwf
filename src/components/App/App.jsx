@@ -51,13 +51,14 @@ function App() {
     setQuickGame(data);
   };
 
-  const createRankedGame = async (accessToken, userId) => {
+  const createRankedGame = async (accessToken, userId, nickname) => {
+    if (!accessToken || !userId || !nickname) return;
     const data = await postRequest(
       ROUTES.RANKED_GAMES,
       {
         Authorization: `Bearer ${accessToken}`,
       },
-      { userId }
+      { userId, nickname }
     );
     setRankedGame(data);
   };

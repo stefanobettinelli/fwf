@@ -33,6 +33,7 @@ function Home({ helloFWF, onClick, onRankedClick }) {
   }
 
   const userId = user?.sub.split("|")[1];
+  const nickname = user?.nickname;
 
   return (
     <>
@@ -59,7 +60,7 @@ function Home({ helloFWF, onClick, onRankedClick }) {
                 disableElevation
                 variant="contained"
                 color="primary"
-                onClick={() => onRankedClick(accessToken, userId)}
+                onClick={() => onRankedClick(accessToken, userId, nickname)}
               >
                 Play ranked
               </Button>

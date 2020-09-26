@@ -106,6 +106,7 @@ class Game(db.Model):
     start_time = db.Column(DateTime, nullable=False)
     end_time = db.Column(DateTime, nullable=True)
     user_id = db.Column(String, nullable=True)
+    nickname = db.Column(String, nullable=True)
     ranked = db.Column(Boolean, nullable=True, default=False)
 
     def insert(self):

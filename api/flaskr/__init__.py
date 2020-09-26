@@ -104,8 +104,11 @@ def create_app():
 
         data = request.get_json()
         user_id = data["userId"]
+        nickname = data["nickname"]
         start_time = datetime.now()
-        game = Game(start_time=start_time, ranked=True, user_id=user_id)
+        game = Game(
+            start_time=start_time, ranked=True, user_id=user_id, nickname=nickname
+        )
         game.insert()
 
         questions = []
