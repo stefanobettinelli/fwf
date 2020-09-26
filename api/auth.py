@@ -153,7 +153,7 @@ def verify_decode_jwt(token):
     )
 
 
-def requires_auth(permission=""):
+def requires_auth(permission="", skip_permission=False):
     def requires_auth_decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
@@ -168,8 +168,8 @@ def requires_auth(permission=""):
                     },
                     401,
                 )
-
-            check_permissions(permission, payload)
+            if not skip_permission:
+                check_permissions(permission, payload)
 
             return f(payload, *args, **kwargs)
 

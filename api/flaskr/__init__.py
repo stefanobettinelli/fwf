@@ -96,7 +96,7 @@ def create_app():
         }
 
     @app.route("/api/games/ranked", methods=["POST"])
-    @requires_auth("post:ranked-games")
+    @requires_auth(skip_permission=True)
     def start_ranked_game(jwt):
         generated_questions = get_game_questions(cached_countries)
         if not generated_questions:
@@ -215,6 +215,23 @@ def create_app():
         question.update()
 
         return {"success": True, "question": question.format()}
+
+    @app.route("/api/rankings")
+    # @requires_auth("post:ranked-games")
+    def get_rankings():
+        rankings = (
+            db.session.query(Game.user_id, Game.nickname, db.func.sum(Game.score))
+            .group_by(Game.user_id, Game.nickname)
+            .order_by(db.func.sum(Game.score).desc())
+            .all()
+        )
+        return {
+            "success": True,
+            "rankings": [
+                {"userId": ranking[0], "nickname": ranking[1], "score": ranking[2]}
+                for ranking in rankings
+            ],
+        }
 
     @app.errorhandler(404)
     def resource_not_found(error):
