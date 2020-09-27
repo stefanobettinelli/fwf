@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  BottomNavigation,
-  BottomNavigationAction,
-  Container,
-  CssBaseline,
-} from "@material-ui/core";
-import { HomeRounded } from "@material-ui/icons";
+import { Container, CssBaseline } from "@material-ui/core";
 
 import useStyles from "./styles";
 import { deleteRequest, getRequest, postRequest } from "../../networkManager";
@@ -13,8 +7,8 @@ import {
   Redirect,
   Route,
   Switch,
-  useLocation,
   useHistory,
+  useLocation,
 } from "react-router-dom";
 import Home from "../Home/Home";
 import Game from "../Game/Game";
@@ -22,6 +16,7 @@ import { ROUTES } from "../../constants";
 import { getGameRoute } from "../../utils";
 import ConfirmationDialog from "../ConfirmationDialog/ConfirmationDialog";
 import AppNavigation from "../AppNavigation/AppNavigation";
+import Rankings from "../Rankings/Rankings";
 
 function App() {
   const classes = useStyles();
@@ -112,6 +107,9 @@ function App() {
               onClick={createQuickGame}
               onRankedClick={createRankedGame}
             />
+          </Route>
+          <Route exact path="/rankings">
+            <Rankings />
           </Route>
           {quickGame && (
             <Route
