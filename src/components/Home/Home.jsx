@@ -7,26 +7,9 @@ import LogoutButton from "../LogoutButton/LogoutButton";
 import { useAuth0 } from "@auth0/auth0-react";
 import useStyles from "./styles";
 
-function Home({ helloFWF, onClick, onRankedClick }) {
-  const {
-    user,
-    isLoading,
-    isAuthenticated,
-    getAccessTokenSilently,
-  } = useAuth0();
-  const [accessToken, setAccessToken] = useState(null);
+function Home({ helloFWF, onClick, onRankedClick, accessToken }) {
+  const { user, isLoading, isAuthenticated } = useAuth0();
   const classes = useStyles();
-
-  useEffect(() => {
-    const getToken = async () => {
-      const accessToken = await getAccessTokenSilently({
-        audience: "https://flagsarefun.herokuapp.com/api/",
-        scope: "post:ranked-games",
-      });
-      setAccessToken(accessToken);
-    };
-    if (isAuthenticated) getToken();
-  });
 
   if (isLoading) {
     return <div>Loading...</div>;

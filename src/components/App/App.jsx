@@ -17,6 +17,7 @@ import { getGameRoute } from "../../utils";
 import ConfirmationDialog from "../ConfirmationDialog/ConfirmationDialog";
 import AppNavigation from "../AppNavigation/AppNavigation";
 import Rankings from "../Rankings/Rankings";
+import { useAuth0 } from "@auth0/auth0-react";
 
 function App() {
   const classes = useStyles();
@@ -25,7 +26,20 @@ function App() {
   const [quickGame, setQuickGame] = useState(null);
   const [rankedGame, setRankedGame] = useState(null);
   const [deleteGame, setDeleteGame] = useState(false);
+  const [accessToken, setAccessToken] = useState(null);
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const location = useLocation();
+
+  useEffect(() => {
+    const getToken = async () => {
+      const accessToken = await getAccessTokenSilently({
+        audience: "https://flagsarefun.herokuapp.com/api/",
+        scope: "post:ranked-games",
+      });
+      setAccessToken(accessToken);
+    };
+    if (isAuthenticated) getToken();
+  }, [isAuthenticated]);
 
   useEffect(() => {
     const sayHello = async () => {
@@ -106,10 +120,14 @@ function App() {
               helloFWF={helloFWF}
               onClick={createQuickGame}
               onRankedClick={createRankedGame}
+              accessToken={accessToken}
             />
           </Route>
           <Route exact path="/rankings">
-            <Rankings />
+            <Rankings
+              isAuthenticated={isAuthenticated}
+              accessToken={accessToken}
+            />
           </Route>
           {quickGame && (
             <Route
