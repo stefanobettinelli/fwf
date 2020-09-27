@@ -21,6 +21,7 @@ import Game from "../Game/Game";
 import { ROUTES } from "../../constants";
 import { getGameRoute } from "../../utils";
 import ConfirmationDialog from "../ConfirmationDialog/ConfirmationDialog";
+import AppNavigation from "../AppNavigation/AppNavigation";
 
 function App() {
   const classes = useStyles();
@@ -63,7 +64,7 @@ function App() {
     setRankedGame(data);
   };
 
-  const onNavigationChange = async () => {
+  const onHomeNavigation = async () => {
     if (!quickGame) {
       history.push("/");
       return;
@@ -71,6 +72,10 @@ function App() {
     const gameResponse = await getRequest(`/games/${quickGame.id}`);
     if (gameResponse.game.end_time) history.push("/");
     else if (quickGame) setDeleteGame(true);
+  };
+
+  const onRankingsNavigation = () => {
+    history.push("/rankings");
   };
 
   const confirmDeleteGame = async () => {
@@ -95,14 +100,10 @@ function App() {
         onClose={onClose}
         buttonLabel="Delete"
       />
-      <BottomNavigation value="Home">
-        <BottomNavigationAction
-          label="Home"
-          value="home"
-          icon={<HomeRounded />}
-          onClick={onNavigationChange}
-        />
-      </BottomNavigation>
+      <AppNavigation
+        onHomeClick={onHomeNavigation}
+        onRankingsClick={onRankingsNavigation}
+      />
       <Container classes={{ root: classes.root }}>
         <Switch>
           <Route exact path="/">
