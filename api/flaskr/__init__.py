@@ -128,6 +128,7 @@ def create_app():
         }
 
     @app.route("/api/games/<int:game_id>", methods=["DELETE"])
+    @requires_auth("delete:games")
     def delete_game(game_id):
         game = Game.query.get(game_id)
 
@@ -137,6 +138,13 @@ def create_app():
         game.delete()
 
         return {"success": True}
+
+    @app.route("/api/games", methods=["DELETE"])
+    @requires_auth("delete:games")
+    def delete_games(jwt):
+        num_rows_deleted = db.session.query(Game).delete()
+        db.session.commit()
+        return {"success": True, "deletedRows": num_rows_deleted}
 
     @app.route("/api/games/<int:game_id>", methods=["PATCH"])
     def end_game(game_id):
@@ -221,6 +229,7 @@ def create_app():
     def get_rankings():
         rankings = (
             db.session.query(Game.user_id, Game.nickname, db.func.sum(Game.score))
+            .filter(Game.ranked.is_(True))
             .group_by(Game.user_id, Game.nickname)
             .order_by(db.func.sum(Game.score).desc())
             .all()

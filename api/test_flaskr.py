@@ -11,6 +11,7 @@ from utils import get_simplified_countries, get_game_questions
 
 load_dotenv(".env")
 
+ADMIN_JWT = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InBybFdlQU9FYS1rNWFxbmdZUmRwZCJ9.eyJpc3MiOiJodHRwczovL2ZzbmQtc3RlZi5ldS5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWY2NWU2ZDI3ZTFhMTMwMDY5MTY3NDQ2IiwiYXVkIjpbImh0dHBzOi8vZmxhZ3NhcmVmdW4uaGVyb2t1YXBwLmNvbS9hcGkvIiwiaHR0cHM6Ly9mc25kLXN0ZWYuZXUuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTYwMTIyNzEyMywiZXhwIjoxNjAxMzEzNTIzLCJhenAiOiJMM043bTV2YXRyVjJQb3hIc05CWklJMFlaanlhMlBReSIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwgcG9zdDpyYW5rZWQtZ2FtZXMiLCJwZXJtaXNzaW9ucyI6WyJkZWxldGU6Z2FtZXMiLCJwb3N0OnJhbmtlZC1nYW1lcyJdfQ.nLj0XkbJtnNgdT-WObFCRhAiuMwjzx-Hjb-cmujZeZZyKbn4aaZ-LZ6_H44p0wbOZdjyHqXERRM_vCKtdpv40RHdrSOcaGxPyWPpTvKGoxvVSbUKCiKWLUsQR9junfd3FbcII1pqyTFycFc2gPASUnA5gpOzwbnzAveygcV8bhrUU5F4qwtzgxcH_J8kwxU5xDKP0AKjZbWb_NaRpWMvS2ixehrzahHgjxn_aiVlOaz_pgqZZKA4BxU_zU9yPSpYT6TdXFzo7hfwY_7z8RKrRydH4GaPF-0L7EK0XIBrd53XP-ERV3cmDsbFyrezSqC2ENZyg3x_kmtI0RUMvmVf0Q"
 RANKED_PLAYER_JWT = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InBybFdlQU9FYS1rNWFxbmdZUmRwZCJ9.eyJpc3MiOiJodHRwczovL2ZzbmQtc3RlZi5ldS5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWY2ZmE4ODRhNmFmNjQwMDcxZDU3ZDJhIiwiYXVkIjpbImh0dHBzOi8vZmxhZ3NhcmVmdW4uaGVyb2t1YXBwLmNvbS9hcGkvIiwiaHR0cHM6Ly9mc25kLXN0ZWYuZXUuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTYwMTIxNzk5MiwiZXhwIjoxNjAxMzA0MzkyLCJhenAiOiJMM043bTV2YXRyVjJQb3hIc05CWklJMFlaanlhMlBReSIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJwZXJtaXNzaW9ucyI6W119.SzesGq7rz-53u3ZUpDBnYmZvSGpKVTC180YZm7PqMUZOlh9IKinJrLU5FyRsi1cjhgEFckdHz-WJIga2RO537CtVO1p7pjHZ1eY3fL32ulywlT2E1epQwx2zsHAVBCOME1iBAzeMr4natjF_W8i9b6edAMF1m9KOQpzf1fQHN-IS7vdh-DpuWGfIRpwm_6t46DuE-pjfdaGcTELWeI9ls0TkyOehjnNGYxUk_O4m6aNnEX86DmAD-W0z5qFIGJSaUOtNBqbBN_VyfdW0MBw3Y_rQPpqP5BR1Ga07x2jaGgc6ihCMmpuNQ3XDuqvZEj2xbwIdhzsXz8ZQ1aZXxiIqAA"
 
 
@@ -168,13 +169,23 @@ class FunWithFlagsTestCase(unittest.TestCase):
     def test_delete_game(self):
         game = self.test_create_game()
         game_question_ids = [q["id"] for q in game["questions"]]
-        response = self.client().delete(f"/api/games/{game['id']}")
+        response = self.client().delete(
+            f"/api/games/{game['id']}", headers={"Authorization": f"Bearer {ADMIN_JWT}"}
+        )
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data["success"], True)
         for q_id in game_question_ids:
             response_question = self.client().get(f"/api/questions/{q_id}")
             self.assertEqual(response_question.status_code, 404)
+
+    def test_delete_games(self):
+        response = self.client().delete(
+            "/api/games", headers={"Authorization": f"Bearer {ADMIN_JWT}"}
+        )
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
+        self.assertEqual(data["success"], True)
 
     def test_404_delete_game(self):
         response_delete_game = self.client().delete(f"/api/games/{9999999999999999999}")
@@ -192,6 +203,17 @@ class FunWithFlagsTestCase(unittest.TestCase):
         response_game = self.client().get(f"/api/games/{9999999999999999999}")
         data = json.loads(response_game.data)
         self.assert_404(data, response_game)
+
+    def test_reset_ranking(self):
+        response = self.client().delete(
+            "/api/games", headers={"Authorization": f"Bearer {ADMIN_JWT}"},
+        )
+        self.assertEqual(response.status_code, 200)
+        response = self.client().get("/api/games")
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertEqual(len(data["games"]), 0)
 
 
 # Make the tests conveniently executable

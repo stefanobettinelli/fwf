@@ -72,7 +72,7 @@ class Question(db.Model):
     options = Column(ARRAY(JSON), nullable=False)
     correct_answer = Column(Integer, nullable=False)
     submitted_answer = Column(Integer, nullable=True)
-    game_id = Column(Integer, db.ForeignKey("games.id"))
+    game_id = Column(Integer, db.ForeignKey("games.id", ondelete="CASCADE"))
 
     def insert(self):
         db.session.add(self)
@@ -98,7 +98,11 @@ class Question(db.Model):
 class Game(db.Model):
     __tablename__ = "games"
     questions = db.relationship(
-        "Question", backref="game", lazy="dynamic", cascade="all, delete-orphan"
+        "Question",
+        backref="game",
+        lazy="dynamic",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
     )
 
     id = Column(Integer, primary_key=True)
