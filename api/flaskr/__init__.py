@@ -129,7 +129,7 @@ def create_app():
 
     @app.route("/api/games/<int:game_id>", methods=["DELETE"])
     @requires_auth("delete:games")
-    def delete_game(game_id):
+    def delete_game(jwt, game_id):
         game = Game.query.get(game_id)
 
         if game is None:
