@@ -27,16 +27,17 @@ function Rankings({ isAuthenticated, accessToken }) {
 
   return (
     <>
-      {isAuthenticated && (
-        <Button
-          disableElevation
-          variant="contained"
-          color="primary"
-          onClick={resetRankings}
-        >
-          Reset rankings
-        </Button>
-      )}
+      {/* TODO: this button will be reintroduced in the future */}
+      {/*{isAuthenticated && (*/}
+      {/*  <Button*/}
+      {/*    disableElevation*/}
+      {/*    variant="contained"*/}
+      {/*    color="primary"*/}
+      {/*    onClick={resetRankings}*/}
+      {/*  >*/}
+      {/*    Reset rankings*/}
+      {/*  </Button>*/}
+      {/*)}*/}
       <List
         itemData={rankings}
         height={400}
