@@ -5,7 +5,9 @@ Very simple quiz app.
 2 play modes
  
 - "Quick play" 10 random question, guess the correct flag among 3 choices.
-- "Ranked" 10 random questions, results are recorded. Rankings can be viewed by clicking the top right icon.
+- "Ranked" 10 random questions, results are recorded. Rankings can be viewed 
+by clicking the top right icon. In order to play ranked you need to register, click
+the login button and then choose sign-up.
 
 
  
