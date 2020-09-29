@@ -80,10 +80,10 @@ def create_app():
         game.insert()
 
         questions = []
-        for q in generated_questions:
+        for generated_question in generated_questions:
             question = Question(
-                options=q["options"],
-                correct_answer=q["correctAnswer"],
+                options=generated_question["options"],
+                correct_answer=generated_question["correctAnswer"],
                 game_id=game.id,
             )
             question.insert()
@@ -167,8 +167,11 @@ def create_app():
     def get_games():
         games = Game.query.all()
         data = [
-            {"id": g.id, "questions": [q.format() for q in g.questions.all()]}
-            for g in games
+            {
+                "id": game.id,
+                "questions": [question.format() for question in game.questions.all()],
+            }
+            for game in games
         ]
 
         if games is None:

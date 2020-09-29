@@ -32,6 +32,7 @@ class Country(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    # this is static as self is never referenced
     @staticmethod
     def insert_all(countries):
         db.session.add_all(
