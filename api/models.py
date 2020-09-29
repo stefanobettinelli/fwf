@@ -90,7 +90,6 @@ class Question(db.Model):
         return {
             "id": self.id,
             "options": [json.loads(o) for o in self.options],
-            "correct_answer": self.correct_answer,  # TODO: needs to be removed later on
             "submitted_answer": self.submitted_answer,
             "game_id": self.game.id,
         }
