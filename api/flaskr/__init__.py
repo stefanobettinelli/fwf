@@ -228,7 +228,6 @@ def create_app():
         return {"success": True, "question": question.format()}
 
     @app.route("/api/rankings")
-    # @requires_auth("post:ranked-games")
     def get_rankings():
         rankings = (
             db.session.query(Game.user_id, Game.nickname, db.func.sum(Game.score))
